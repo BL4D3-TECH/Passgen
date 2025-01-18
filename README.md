@@ -1,5 +1,5 @@
 # Passgen
- This program allow you to create very safe passwords and then save them automatically
+ This program is a credentials generator and manager
 
 
 ## Installation
