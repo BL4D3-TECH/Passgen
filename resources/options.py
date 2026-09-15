@@ -1,21 +1,33 @@
 import string
 import random
 from pathlib import Path
-import pyperclip as clp
-try:
-	import resources.crypton as crypton
-except Exception as e:
-	print(e)
-	import crypton
+import resources.crypton as crypton
 
 class codes:
 	@staticmethod
-	def No_errors(*args):
-		return "\033[32m" + "".join(args) + "\033[0m"
+	def No_errors(*args, reset=True):
+		return "\033[32m" + "".join(args) + "\033[0m" if reset else "\033[32m" + "".join(args)
 
 	@staticmethod
-	def Error(*args):
-		return "\033[31m" + "".join(args) + "\033[0m"
+	def Error(*args, reset=True):
+		return "\033[31m" + "".join(args) + "\033[0m" if reset else "\033[31m" + "".join(args)
+
+	@staticmethod
+	def Caution(*args, reset=True):
+		return "\033[33m" + "".join(args) + "\033[0m" if reset else "\033[33m" + "".join(args)
+
+	@staticmethod
+	def Bold(*args, reset=True):
+		return "\033[1m" + "".join(args) + "\033[0m" if reset else "\033[1m" + "".join(args)
+
+def waitpoint():
+    input(codes.Bold("Press <Enter> to continue..."))
+
+try:
+	import pyperclip as clp
+except ModuleNotFoundError:
+	print(codes.Error('Could not find module '), codes.Bold(codes.Error("pyperclip")), codes.Error(f' , run "pip3 install pyperclip" to enable the clipboard'), sep="")
+	waitpoint()
 
 class manager:
 	def __init__(self):
@@ -37,14 +49,12 @@ class manager:
 		for i in range(length+1):
 			char = random.choice(self.characters)
 			password += char
-
-        #printing that the process is finished
-		print(f"Your secure password is:\n{password}.")
 		try:
 			clp.copy(password)
 			print(codes.No_errors("It has been already copied to your clipboard"))
 		except:
-			print(codes.Error(f'There has been an error coping the password to your clipboard\nYou can copy it manually: "{self.password}"'))
+			print(codes.Error('Either you do not have the '), codes.Bold(codes.Error("pyperclip")), codes.Error(', module or there has been an error copying the password to your clipboard'), sep="")
+			print(codes.Caution(f'You can copy it manually though\nYour password is: {password}'))
     	#Saving the self.password
 		while True:
 			save = input("Do you want to save it or not(y, n): ")
@@ -66,7 +76,8 @@ class manager:
 		saved_sites = self.read_passwds()
 		print(codes.No_errors("+" + "-"*102, "+"))
 		for url in saved_sites.keys():
-			print(codes.No_errors(f"+{url:^50}||{self.encoder.unswap(saved_sites[url].strip("\n")):^50}+"))
+			listURLs = saved_sites[url].strip('\n')
+			print(codes.No_errors(f"+{url:^50}||{self.encoder.unswap(listURLs):^50}+"))
 			print(codes.No_errors("+" + "-"*102 + "+"))
 	
 	def show_passwd(self, url):
